@@ -1,0 +1,21 @@
+{
+  "name": "proxmox-dashboard-backend",
+  "version": "1.0.0",
+  "description": "Backend API pour dashboard Proxmox",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": ["proxmox", "dashboard"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5",
+    "https": "^1.0.0"
+  }
+}
