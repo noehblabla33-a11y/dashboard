@@ -3,13 +3,9 @@ import https from 'https';
 
 class ProxmoxClient {
   constructor() {
-    this.host = process.env.PROXMOX_HOST;
-    this.port = process.env.PROXMOX_PORT || 8006;
-    this.username = process.env.PROXMOX_USER;
-    this.password = process.env.PROXMOX_PASSWORD;
-    this.baseUrl = `https://${this.host}:${this.port}/api2/json`;
     this.ticket = null;
     this.csrfToken = null;
+    this.initialized = false;
 
     // Agent HTTPS qui ignore les certificats auto-signés (OK pour usage local)
     this.httpsAgent = new https.Agent({
@@ -17,9 +13,28 @@ class ProxmoxClient {
     });
   }
 
+  // Initialisation tardive pour s'assurer que les env vars sont chargées
+  _init() {
+    if (!this.initialized) {
+      this.host = process.env.PROXMOX_HOST;
+      this.port = process.env.PROXMOX_PORT || 8006;
+      this.username = process.env.PROXMOX_USER;
+      this.password = process.env.PROXMOX_PASSWORD;
+      this.baseUrl = `https://${this.host}:${this.port}/api2/json`;
+      this.initialized = true;
+    }
+  }
+
   // Authentification auprès de Proxmox
   async authenticate() {
+    this._init(); // S'assurer que la config est chargée
+    
     try {
+      console.log('🔍 Debug - Tentative de connexion à:', this.baseUrl);
+      console.log('🔍 Debug - Host:', this.host);
+      console.log('🔍 Debug - Port:', this.port);
+      console.log('🔍 Debug - User:', this.username);
+      
       const response = await axios.post(
         `${this.baseUrl}/access/ticket`,
         `username=${encodeURIComponent(this.username)}&password=${encodeURIComponent(this.password)}`,
@@ -38,6 +53,8 @@ class ProxmoxClient {
       return true;
     } catch (error) {
       console.error('❌ Erreur authentification Proxmox:', error.message);
+      console.error('🔍 Debug - Code erreur:', error.code);
+      console.error('🔍 Debug - Response:', error.response?.status, error.response?.statusText);
       throw new Error('Impossible de se connecter à Proxmox');
     }
   }
