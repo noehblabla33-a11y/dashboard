@@ -4,16 +4,19 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 
 const StatCard = ({ icon: Icon, label, value, unit, trend }) => (
   <div className="bg-slate-800 rounded-lg p-6 shadow-lg border border-slate-700">
-    <div className="flex items-center justify-between mb-4">
+    <div className="flex items-center justify-between mb-2">
       <div className="flex items-center gap-3">
         <div className="p-2 bg-blue-500/20 rounded-lg">
           <Icon className="w-6 h-6 text-blue-400" />
         </div>
-        <h3 className="text-slate-300 font-medium">{label}</h3>
+        <h3 className="text-slate-300 font-medium text-sm">{label}</h3>
       </div>
-      <span className="text-2xl font-bold text-white">
-        {value}{unit}
+    </div>
+    <div className="mb-4">
+      <span className="text-3xl font-bold text-white">
+        {value}
       </span>
+      <span className="text-lg text-slate-400 ml-1">{unit}</span>
     </div>
     {trend && (
       <div className="h-16">
