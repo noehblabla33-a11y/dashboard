@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { Play, Square, RotateCw, Server, Container } from 'lucide-react';
+import { Play, Square, RotateCw, Cpu, HardDrive, RefreshCw } from 'lucide-react';
 import { startVM, stopVM, rebootVM } from '../services/api';
 
-const VMCard = ({ vm, node, onActionComplete }) => {
+
+
+export default function VMCard({ vm, node, onActionComplete }) {
   const [loading, setLoading] = useState(false);
-  const [actionType, setActionType] = useState(null);
+  const [updating, setUpdating] = useState(false);
 
   const isRunning = vm.status === 'running';
   const type = vm.type || 'qemu';
@@ -33,6 +35,33 @@ const VMCard = ({ vm, node, onActionComplete }) => {
     } finally {
       setLoading(false);
       setActionType(null);
+    }
+  };
+
+  const handleUpdateDashboard = async () => {
+    if (!confirm('⚠️ Voulez-vous vraiment mettre à jour le dashboard ?\n\nCela va :\n- Faire un git pull\n- Rebuilder le projet\n- Redémarrer le service\n\nLe dashboard sera indisponible pendant ~30 secondes.')) {
+      return;
+    }
+
+    setUpdating(true);
+    try {
+      const response = await fetch(`http://localhost/api/containers/${vm.vmid}/update-dashboard`, {
+        method: 'POST',
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert('✅ Dashboard mis à jour avec succès !\n\nLe service va redémarrer dans quelques secondes.');
+        // Recharger la page après 3 secondes pour voir les changements
+        setTimeout(() => window.location.reload(), 3000);
+      } else {
+        alert(`❌ Erreur lors de la mise à jour :\n${data.error}`);
+      }
+    } catch (error) {
+      alert(`❌ Erreur de connexion :\n${error.message}`);
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -158,6 +187,16 @@ const VMCard = ({ vm, node, onActionComplete }) => {
                 Arrêter
               </button>
             </>
+            {vm.vmid === 101 && (
+              <button
+                onClick={handleUpdateDashboard}
+                disabled={updating}
+                className="w-full mt-3 py-2 px-3 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 disabled:text-slate-500 rounded transition-colors flex items-center justify-center gap-2 font-medium"
+              >
+                <RefreshCw className={`w-4 h-4 ${updating ? 'animate-spin' : ''}`} />
+                {updating ? 'Mise à jour en cours...' : '🚀 Mettre à jour le Dashboard'}
+              </button>
+            )}
           )}
         </div>
       </div>

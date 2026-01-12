@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import proxmoxRoutes from './routes/proxmox.js';
+import actionsRoutes from './routes/actions.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -28,6 +29,7 @@ app.use((req, res, next) => {
 
 // ⚠️ IMPORTANT : Routes API AVANT le static
 app.use('/api', proxmoxRoutes);
+app.use('/api', actionsRoutes);
 
 // Servir le frontend statique depuis dist
 const frontendPath = path.join(__dirname, '../proxmox-dashboard-frontend/dist');
