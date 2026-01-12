@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import { Play, Square, RotateCw, Cpu, HardDrive, RefreshCw } from 'lucide-react';
+import { Play, Square, RotateCw, Server, Container, RefreshCw } from 'lucide-react';
 import { startVM, stopVM, rebootVM } from '../services/api';
 
-
-
-export default function VMCard({ vm, node, onActionComplete }) {
+const VMCard = ({ vm, node, onActionComplete }) => {
   const [loading, setLoading] = useState(false);
+  const [actionType, setActionType] = useState(null);
   const [updating, setUpdating] = useState(false);
 
   const isRunning = vm.status === 'running';
@@ -38,6 +37,7 @@ export default function VMCard({ vm, node, onActionComplete }) {
     }
   };
 
+  // Nouvelle fonction pour mettre à jour le dashboard (uniquement pour le container 101)
   const handleUpdateDashboard = async () => {
     if (!confirm('⚠️ Voulez-vous vraiment mettre à jour le dashboard ?\n\nCela va :\n- Faire un git pull\n- Rebuilder le projet\n- Redémarrer le service\n\nLe dashboard sera indisponible pendant ~30 secondes.')) {
       return;
@@ -45,7 +45,7 @@ export default function VMCard({ vm, node, onActionComplete }) {
 
     setUpdating(true);
     try {
-      const response = await fetch(`http://localhost/api/containers/${vm.vmid}/update-dashboard`, {
+      const response = await fetch(`/api/containers/${vm.vmid}/update-dashboard`, {
         method: 'POST',
       });
 
@@ -66,140 +66,112 @@ export default function VMCard({ vm, node, onActionComplete }) {
   };
 
   return (
-    <div className="relative group">
-      {/* Glow effect externe - couleur selon le type */}
-      <div className={`absolute -inset-1 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500 ${
-        isLXC 
-          ? 'bg-gradient-to-br from-purple-500/20 to-pink-500/20' 
-          : 'bg-gradient-to-br from-green-500/20 to-emerald-500/20'
-      }`}></div>
-      
-      {/* Card content */}
-      <div className="relative bg-gradient-to-br from-slate-800/90 via-slate-800/80 to-slate-900/90 rounded-2xl p-6 shadow-2xl border border-slate-700/50 backdrop-blur-sm hover:border-slate-600/50 transition-all duration-300 hover:transform hover:-translate-y-1">
-        
-        {/* Header */}
-        <div className="flex items-start justify-between mb-5">
-          <div className="flex items-center gap-3">
-            {/* Icon avec glow */}
-            <div className="relative">
-              <div className={`absolute inset-0 rounded-xl blur-md transition-all duration-300 ${
-                isLXC ? 'bg-purple-500/30' : 'bg-green-500/30'
-              }`}></div>
-              <div className={`relative p-2.5 rounded-xl border backdrop-blur-sm ${
-                isLXC 
-                  ? 'bg-gradient-to-br from-purple-500/20 to-pink-500/20 border-purple-400/30' 
-                  : 'bg-gradient-to-br from-green-500/20 to-emerald-500/20 border-green-400/30'
-              }`}>
-                {isLXC ? (
-                  <Container className="w-6 h-6 text-purple-400" />
-                ) : (
-                  <Server className="w-6 h-6 text-green-400" />
-                )}
-              </div>
-            </div>
-            
-            <div>
-              <h3 className="text-white font-bold text-lg">{vm.name || `VM ${vm.vmid}`}</h3>
-              <p className="text-slate-400 text-sm font-medium">
-                {isLXC ? 'Container' : 'Virtual Machine'} <span className="text-slate-500">#{vm.vmid}</span>
-              </p>
-            </div>
+    <div className="bg-slate-800 rounded-lg p-6 shadow-lg border border-slate-700 hover:border-slate-600 transition-colors">
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <div className={`p-2 rounded-lg ${isLXC ? 'bg-purple-500/20' : 'bg-green-500/20'}`}>
+            {isLXC ? (
+              <Container className="w-6 h-6 text-purple-400" />
+            ) : (
+              <Server className="w-6 h-6 text-green-400" />
+            )}
           </div>
-          
-          {/* Status badge */}
-          <div className="relative">
-            <span className={`relative px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide border backdrop-blur-sm ${
-              isRunning
-                ? 'bg-green-500/20 text-green-300 border-green-500/30 shadow-lg shadow-green-500/20'
-                : 'bg-slate-600/30 text-slate-400 border-slate-600/30'
-            }`}>
-              {isRunning ? '● Online' : '○ Offline'}
-            </span>
+          <div>
+            <h3 className="text-white font-semibold text-lg">{vm.name || `VM ${vm.vmid}`}</h3>
+            <p className="text-slate-400 text-sm">
+              {isLXC ? 'LXC' : 'VM'} #{vm.vmid}
+            </p>
           </div>
         </div>
-
-        {/* Stats - seulement si en ligne */}
-        {isRunning && (
-          <div className="grid grid-cols-2 gap-3 mb-5">
-            {/* CPU Stat */}
-            <div className="relative">
-              <div className="relative bg-gradient-to-br from-slate-700/50 to-slate-800/50 rounded-xl p-3 border border-slate-600/30 backdrop-blur-sm">
-                <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">CPU</p>
-                <p className="text-white font-bold text-lg">
-                  {vm.cpu ? `${(vm.cpu * 100).toFixed(1)}%` : 'N/A'}
-                </p>
-              </div>
-            </div>
-            
-            {/* RAM Stat */}
-            <div className="relative">
-              <div className="relative bg-gradient-to-br from-slate-700/50 to-slate-800/50 rounded-xl p-3 border border-slate-600/30 backdrop-blur-sm">
-                <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">RAM</p>
-                <p className="text-white font-bold text-lg">
-                  {vm.mem && vm.maxmem
-                    ? `${((vm.mem / vm.maxmem) * 100).toFixed(0)}%`
-                    : 'N/A'}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Actions */}
-        <div className="flex gap-2">
-          {!isRunning ? (
-            <button
-              onClick={() => handleAction('start')}
-              disabled={loading}
-              className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 disabled:from-green-800 disabled:to-green-900 disabled:cursor-not-allowed text-white px-4 py-3 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-green-500/25 border border-green-500/30"
-            >
-              {loading && actionType === 'start' ? (
-                <RotateCw className="w-5 h-5 animate-spin" />
-              ) : (
-                <Play className="w-5 h-5" />
-              )}
-              Démarrer
-            </button>
-          ) : (
-            <>
-              <button
-                onClick={() => handleAction('reboot')}
-                disabled={loading}
-                className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 disabled:from-blue-800 disabled:to-blue-900 disabled:cursor-not-allowed text-white px-4 py-3 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-blue-500/25 border border-blue-500/30"
-              >
-                {loading && actionType === 'reboot' ? (
-                  <RotateCw className="w-5 h-5 animate-spin" />
-                ) : (
-                  <RotateCw className="w-5 h-5" />
-                )}
-                Reboot
-              </button>
-              <button
-                onClick={() => handleAction('stop')}
-                disabled={loading}
-                className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 disabled:from-red-800 disabled:to-red-900 disabled:cursor-not-allowed text-white px-4 py-3 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-red-500/25 border border-red-500/30"
-              >
-                {loading && actionType === 'stop' ? (
-                  <RotateCw className="w-5 h-5 animate-spin" />
-                ) : (
-                  <Square className="w-5 h-5" />
-                )}
-                Arrêter
-              </button>
-            </>
-            )}
-          )}
-          {vm.vmid === 101 && (
-              <button
-                onClick={handleUpdateDashboard}
-                disabled={updating}
-                className="w-full mt-3 py-2 px-3 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 disabled:text-slate-500 rounded transition-colors flex items-center justify-center gap-2 font-medium"
-              >
-                <RefreshCw className={`w-4 h-4 ${updating ? 'animate-spin' : ''}`} />
-                {updating ? 'Mise à jour en cours...' : '🚀 Mettre à jour le Dashboard'}
-              </button>
+        <div className="flex items-center gap-2">
+          <span
+            className={`px-3 py-1 rounded-full text-xs font-medium ${
+              isRunning
+                ? 'bg-green-500/20 text-green-400'
+                : 'bg-slate-600/50 text-slate-400'
+            }`}
+          >
+            {isRunning ? 'En ligne' : 'Arrêté'}
+          </span>
         </div>
       </div>
+
+      {/* Stats */}
+      {isRunning && (
+        <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
+          <div className="bg-slate-700/50 rounded p-2">
+            <p className="text-slate-400">CPU</p>
+            <p className="text-white font-medium">
+              {vm.cpu ? `${(vm.cpu * 100).toFixed(1)}%` : 'N/A'}
+            </p>
+          </div>
+          <div className="bg-slate-700/50 rounded p-2">
+            <p className="text-slate-400">RAM</p>
+            <p className="text-white font-medium">
+              {vm.mem && vm.maxmem
+                ? `${((vm.mem / vm.maxmem) * 100).toFixed(0)}%`
+                : 'N/A'}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Actions */}
+      <div className="flex gap-2">
+        {!isRunning ? (
+          <button
+            onClick={() => handleAction('start')}
+            disabled={loading}
+            className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 disabled:bg-green-800 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg font-medium transition-colors"
+          >
+            {loading && actionType === 'start' ? (
+              <RotateCw className="w-4 h-4 animate-spin" />
+            ) : (
+              <Play className="w-4 h-4" />
+            )}
+            Démarrer
+          </button>
+        ) : (
+          <>
+            <button
+              onClick={() => handleAction('reboot')}
+              disabled={loading}
+              className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            >
+              {loading && actionType === 'reboot' ? (
+                <RotateCw className="w-4 h-4 animate-spin" />
+              ) : (
+                <RotateCw className="w-4 h-4" />
+              )}
+              Redémarrer
+            </button>
+            <button
+              onClick={() => handleAction('stop')}
+              disabled={loading}
+              className="flex-1 flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 disabled:bg-red-800 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            >
+              {loading && actionType === 'stop' ? (
+                <RotateCw className="w-4 h-4 animate-spin" />
+              ) : (
+                <Square className="w-4 h-4" />
+              )}
+              Arrêter
+            </button>
+          </>
+        )}
+      </div>
+
+      {/* Bouton de mise à jour du dashboard (uniquement pour le container 101) */}
+      {vm.vmid === 101 && (
+        <button
+          onClick={handleUpdateDashboard}
+          disabled={updating}
+          className="w-full mt-3 py-2 px-4 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed rounded-lg transition-colors flex items-center justify-center gap-2 font-medium"
+        >
+          <RefreshCw className={`w-4 h-4 ${updating ? 'animate-spin' : ''}`} />
+          {updating ? 'Mise à jour en cours...' : '🚀 Mettre à jour le Dashboard'}
+        </button>
+      )}
     </div>
   );
 };
