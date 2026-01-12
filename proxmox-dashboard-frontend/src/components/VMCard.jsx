@@ -38,14 +38,24 @@ const VMCard = ({ vm, node, onActionComplete }) => {
 
   return (
     <div className="relative group">
+      {/* Glow effect externe - couleur selon le type */}
+      <div className={`absolute -inset-1 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500 ${
+        isLXC 
+          ? 'bg-gradient-to-br from-purple-500/20 to-pink-500/20' 
+          : 'bg-gradient-to-br from-green-500/20 to-emerald-500/20'
+      }`}></div>
+      
       {/* Card content */}
       <div className="relative bg-gradient-to-br from-slate-800/90 via-slate-800/80 to-slate-900/90 rounded-2xl p-6 shadow-2xl border border-slate-700/50 backdrop-blur-sm hover:border-slate-600/50 transition-all duration-300 hover:transform hover:-translate-y-1">
         
         {/* Header */}
         <div className="flex items-start justify-between mb-5">
           <div className="flex items-center gap-3">
-            {/* Icon */}
+            {/* Icon avec glow */}
             <div className="relative">
+              <div className={`absolute inset-0 rounded-xl blur-md transition-all duration-300 ${
+                isLXC ? 'bg-purple-500/30' : 'bg-green-500/30'
+              }`}></div>
               <div className={`relative p-2.5 rounded-xl border backdrop-blur-sm ${
                 isLXC 
                   ? 'bg-gradient-to-br from-purple-500/20 to-pink-500/20 border-purple-400/30' 
@@ -150,13 +160,6 @@ const VMCard = ({ vm, node, onActionComplete }) => {
             </>
           )}
         </div>
-        
-        {/* Decorative corner gradient */}
-        <div className={`absolute top-0 right-0 w-32 h-32 rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none ${
-          isLXC 
-            ? 'bg-gradient-to-br from-purple-500/10 to-transparent' 
-            : 'bg-gradient-to-br from-green-500/10 to-transparent'
-        }`}></div>
       </div>
     </div>
   );
