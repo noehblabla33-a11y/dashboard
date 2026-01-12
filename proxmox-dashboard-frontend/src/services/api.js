@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-export default API_BASE_URL;
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -42,4 +41,5 @@ export const rebootVM = async (vmid, node, type) => {
   return response.data;
 };
 
+// Export par défaut de l'instance axios configurée
 export default api;
