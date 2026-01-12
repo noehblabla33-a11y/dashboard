@@ -187,7 +187,9 @@ export default function VMCard({ vm, node, onActionComplete }) {
                 Arrêter
               </button>
             </>
-            {vm.vmid === 101 && (
+            )}
+          )}
+          {vm.vmid === 101 && (
               <button
                 onClick={handleUpdateDashboard}
                 disabled={updating}
@@ -196,8 +198,6 @@ export default function VMCard({ vm, node, onActionComplete }) {
                 <RefreshCw className={`w-4 h-4 ${updating ? 'animate-spin' : ''}`} />
                 {updating ? 'Mise à jour en cours...' : '🚀 Mettre à jour le Dashboard'}
               </button>
-            )}
-          )}
         </div>
       </div>
     </div>
