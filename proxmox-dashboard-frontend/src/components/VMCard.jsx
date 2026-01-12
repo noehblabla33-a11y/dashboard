@@ -37,7 +37,7 @@ const VMCard = ({ vm, node, onActionComplete }) => {
   };
 
   return (
-    <div className="relative group">
+    <div className="relative group overflow-hidden rounded-2xl">
       {/* Glow effect - couleur selon le type - avec z-index correct */}
       <div className={`absolute -inset-1 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500 -z-10 ${
         isLXC 
@@ -96,7 +96,7 @@ const VMCard = ({ vm, node, onActionComplete }) => {
         {isRunning && (
           <div className="grid grid-cols-2 gap-3 mb-5">
             {/* CPU Stat */}
-            <div className="relative group/stat">
+            <div className="relative group/stat overflow-hidden rounded-xl">
               <div className="absolute -inset-0.5 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-xl blur-sm opacity-0 group-hover/stat:opacity-100 transition-opacity duration-300 -z-10"></div>
               <div className="relative bg-gradient-to-br from-slate-700/50 to-slate-800/50 rounded-xl p-3 border border-slate-600/30 backdrop-blur-sm">
                 <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">CPU</p>
@@ -107,7 +107,7 @@ const VMCard = ({ vm, node, onActionComplete }) => {
             </div>
             
             {/* RAM Stat */}
-            <div className="relative group/stat">
+            <div className="relative group/stat overflow-hidden rounded-xl">
               <div className="absolute -inset-0.5 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-xl blur-sm opacity-0 group-hover/stat:opacity-100 transition-opacity duration-300 -z-10"></div>
               <div className="relative bg-gradient-to-br from-slate-700/50 to-slate-800/50 rounded-xl p-3 border border-slate-600/30 backdrop-blur-sm">
                 <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">RAM</p>

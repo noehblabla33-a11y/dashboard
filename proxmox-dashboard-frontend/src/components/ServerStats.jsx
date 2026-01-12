@@ -3,7 +3,7 @@ import { Cpu, HardDrive, Network } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const StatCard = ({ icon: Icon, label, value, unit, trend }) => (
-  <div className="relative group">
+  <div className="relative group overflow-hidden rounded-2xl">
     {/* Glow effect - maintenant avec z-index correct */}
     <div className="absolute -inset-1 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500 -z-10"></div>
     
