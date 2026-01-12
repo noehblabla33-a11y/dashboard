@@ -2,18 +2,21 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import proxmoxRoutes from './routes/proxmox.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Pour obtenir __dirname en ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Charger les variables d'environnement
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 80;
 
 // Middlewares
-app.use(cors({
-  origin: 'http://localhost:5173', // URL par défaut de Vite
-  credentials: true
-}));
+app.use(cors()); // CORS simplifié (tout est sur le même domaine maintenant)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -23,30 +26,16 @@ app.use((req, res, next) => {
   next();
 });
 
-// Routes
-app.get('/', (req, res) => {
-  res.json({ 
-    message: 'Proxmox Dashboard API',
-    version: '1.0.0',
-    endpoints: {
-      nodes: '/api/nodes',
-      nodeStatus: '/api/nodes/:node/status',
-      resources: '/api/nodes/:node/resources',
-      startVM: 'POST /api/vms/:vmid/start',
-      stopVM: 'POST /api/vms/:vmid/stop',
-      rebootVM: 'POST /api/vms/:vmid/reboot'
-    }
-  });
-});
-
+// ⚠️ IMPORTANT : Routes API AVANT le static
 app.use('/api', proxmoxRoutes);
 
-// Gestion des erreurs 404
-app.use((req, res) => {
-  res.status(404).json({ 
-    success: false, 
-    error: 'Route non trouvée' 
-  });
+// Servir le frontend statique depuis dist
+const frontendPath = path.join(__dirname, '../proxmox-dashboard-frontend/dist');
+app.use(express.static(frontendPath));
+
+// Fallback pour React Router - DOIT être après les routes API
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
 // Gestion globale des erreurs
@@ -59,8 +48,8 @@ app.use((err, req, res, next) => {
 });
 
 // Démarrage du serveur
-app.listen(PORT, () => {
-  console.log(`🚀 Serveur démarré sur http://localhost:${PORT}`);
-  console.log(`📊 Dashboard Proxmox Backend v1.0.0`);
-  console.log(`🔧 Environnement: ${process.env.NODE_ENV || 'development'}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Dashboard Proxmox sur http://0.0.0.0:${PORT}`);
+  console.log(`📊 Frontend + Backend unifiés (ALL-IN-ONE)`);
+  console.log(`🔧 Environnement: ${process.env.NODE_ENV || 'production'}`);
 });
