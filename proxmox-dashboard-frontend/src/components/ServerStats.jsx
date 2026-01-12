@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Cpu, HardDrive, Network, Activity } from 'lucide-react';
+import { Cpu, HardDrive, Network } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const StatCard = ({ icon: Icon, label, value, unit, trend }) => (
@@ -57,10 +57,9 @@ const ServerStats = ({ nodeStatus }) => {
   const memUsed = ((nodeStatus.memory?.used || 0) / (1024 ** 3)).toFixed(1);
   const memTotal = ((nodeStatus.memory?.total || 0) / (1024 ** 3)).toFixed(1);
   const memPercent = ((nodeStatus.memory?.used || 0) / (nodeStatus.memory?.total || 1) * 100).toFixed(1);
-  const uptime = Math.floor((nodeStatus.uptime || 0) / 86400);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       <StatCard
         icon={Cpu}
         label="CPU"
@@ -80,12 +79,6 @@ const ServerStats = ({ nodeStatus }) => {
         label="Utilisation"
         value={memPercent}
         unit="%"
-      />
-      <StatCard
-        icon={Activity}
-        label="Uptime"
-        value={uptime}
-        unit=" jours"
       />
     </div>
   );

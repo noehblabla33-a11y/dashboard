@@ -11,3 +11,25 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: #0f172a;
 }
+
+/* Animation pour le badge uptime */
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.02);
+  }
+}
+
+.uptime-badge {
+  animation: pulse-subtle 3s ease-in-out infinite;
+  transition: all 0.3s ease;
+}
+
+.uptime-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(34, 197, 94, 0.3);
+}
