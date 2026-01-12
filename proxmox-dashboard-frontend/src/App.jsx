@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { RefreshCw, Server } from 'lucide-react';
+import { Server } from 'lucide-react';
 import ServerStats from './components/ServerStats';
 import VMCard from './components/VMCard';
 import { getNodes, getNodeStatus, getNodeResources } from './services/api';
@@ -11,9 +11,7 @@ function App() {
   const [nodeStatus, setNodeStatus] = useState(null);
   const [resources, setResources] = useState({ vms: [], containers: [] });
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
-  const [autoRefresh, setAutoRefresh] = useState(true);
 
   // Charger les nodes au démarrage
   useEffect(() => {
@@ -22,14 +20,14 @@ function App() {
 
   // Auto-refresh toutes les 5 secondes
   useEffect(() => {
-    if (!autoRefresh || !selectedNode) return;
+    if (!selectedNode) return;
 
     const interval = setInterval(() => {
       loadNodeData(selectedNode, true);
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [selectedNode, autoRefresh]);
+  }, [selectedNode]);
 
   const loadNodes = async () => {
     try {
@@ -53,8 +51,6 @@ function App() {
 
   const loadNodeData = async (nodeName, silent = false) => {
     try {
-      if (!silent) setRefreshing(true);
-      
       const [statusResponse, resourcesResponse] = await Promise.all([
         getNodeStatus(nodeName),
         getNodeResources(nodeName)
@@ -72,14 +68,6 @@ function App() {
       if (!silent) {
         setError('Erreur lors du chargement des données');
       }
-    } finally {
-      if (!silent) setRefreshing(false);
-    }
-  };
-
-  const handleRefresh = () => {
-    if (selectedNode) {
-      loadNodeData(selectedNode);
     }
   };
 
@@ -87,7 +75,7 @@ function App() {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <RefreshCw className="w-12 h-12 text-blue-500 animate-spin mx-auto mb-4" />
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-slate-300 text-lg">Chargement du dashboard...</p>
         </div>
       </div>
@@ -134,25 +122,6 @@ function App() {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              <label className="flex items-center gap-2 text-sm text-slate-300 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={autoRefresh}
-                  onChange={(e) => setAutoRefresh(e.target.checked)}
-                  className="w-4 h-4 rounded"
-                />
-                Auto-refresh (5s)
-              </label>
-              <button
-                onClick={handleRefresh}
-                disabled={refreshing}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-not-allowed px-4 py-2 rounded-lg font-medium transition-colors"
-              >
-                <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-                Rafraîchir
-              </button>
-            </div>
           </div>
         </div>
       </header>
@@ -186,13 +155,6 @@ function App() {
           </div>
         )}
       </main>
-
-      {/* Footer */}
-      <footer className="bg-slate-800 border-t border-slate-700 mt-12">
-        <div className="container mx-auto px-6 py-4 text-center text-slate-400 text-sm">
-          Proxmox Dashboard - Projet personnel
-        </div>
-      </footer>
     </div>
   );
 }
