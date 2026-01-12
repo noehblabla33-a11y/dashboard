@@ -191,16 +191,31 @@ function App() {
         {/* Server Stats */}
         <ServerStats nodeStatus={nodeStatus} />
 
-        {/* VMs & Containers */}
-        <div className="mb-6">
-          <h2 className="text-xl font-bold mb-4">
-            Machines Virtuelles & Conteneurs ({allResources.length})
-          </h2>
+        {/* VMs & Containers Section */}
+        <div className="mb-6 flex items-center gap-4">
+          <div className="flex-1">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent mb-1">
+              Machines Virtuelles & Conteneurs
+            </h2>
+            <div className="flex items-center gap-2">
+              <div className="h-1 w-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
+              <p className="text-slate-400 text-sm font-medium">
+                {allResources.length} ressource{allResources.length > 1 ? 's' : ''} active{allResources.length > 1 ? 's' : ''}
+              </p>
+            </div>
+          </div>
         </div>
 
         {allResources.length === 0 ? (
-          <div className="bg-slate-800 rounded-lg p-12 text-center border border-slate-700">
-            <p className="text-slate-400 text-lg">Aucune VM ou conteneur trouvé</p>
+          <div className="relative group">
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-700/20 to-slate-800/20 rounded-2xl blur-xl"></div>
+            <div className="relative bg-gradient-to-br from-slate-800/80 to-slate-900/80 rounded-2xl p-12 text-center border border-slate-700/50 backdrop-blur-sm">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-700/50 flex items-center justify-center">
+                <Server className="w-8 h-8 text-slate-500" />
+              </div>
+              <p className="text-slate-400 text-lg font-medium">Aucune VM ou conteneur trouvé</p>
+              <p className="text-slate-500 text-sm mt-2">Les ressources apparaîtront ici une fois créées</p>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -217,9 +232,16 @@ function App() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-slate-800 border-t border-slate-700 mt-12">
-        <div className="container mx-auto px-6 py-4 text-center text-slate-400 text-sm">
-          Proxmox Dashboard - Projet personnel
+      <footer className="relative bg-gradient-to-br from-slate-800/80 via-slate-800/70 to-slate-900/80 border-t border-slate-700/50 mt-12 backdrop-blur-sm">
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-600 to-transparent"></div>
+        <div className="container mx-auto px-6 py-6 text-center">
+          <p className="text-slate-400 text-sm font-medium">
+            Proxmox Dashboard - <span className="text-slate-500">Projet personnel</span>
+          </p>
+          <div className="mt-2 flex items-center justify-center gap-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <p className="text-slate-500 text-xs">System monitoring active</p>
+          </div>
         </div>
       </footer>
     </div>
