@@ -38,8 +38,8 @@ const VMCard = ({ vm, node, onActionComplete }) => {
 
   return (
     <div className="relative group">
-      {/* Glow effect - couleur selon le type */}
-      <div className={`absolute inset-0 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500 ${
+      {/* Glow effect - couleur selon le type - avec z-index correct */}
+      <div className={`absolute -inset-1 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500 -z-10 ${
         isLXC 
           ? 'bg-gradient-to-br from-purple-500/20 to-pink-500/20' 
           : 'bg-gradient-to-br from-green-500/20 to-emerald-500/20'
@@ -97,7 +97,7 @@ const VMCard = ({ vm, node, onActionComplete }) => {
           <div className="grid grid-cols-2 gap-3 mb-5">
             {/* CPU Stat */}
             <div className="relative group/stat">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-xl blur-sm opacity-0 group-hover/stat:opacity-100 transition-opacity duration-300"></div>
+              <div className="absolute -inset-0.5 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-xl blur-sm opacity-0 group-hover/stat:opacity-100 transition-opacity duration-300 -z-10"></div>
               <div className="relative bg-gradient-to-br from-slate-700/50 to-slate-800/50 rounded-xl p-3 border border-slate-600/30 backdrop-blur-sm">
                 <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">CPU</p>
                 <p className="text-white font-bold text-lg">
@@ -108,7 +108,7 @@ const VMCard = ({ vm, node, onActionComplete }) => {
             
             {/* RAM Stat */}
             <div className="relative group/stat">
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-xl blur-sm opacity-0 group-hover/stat:opacity-100 transition-opacity duration-300"></div>
+              <div className="absolute -inset-0.5 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-xl blur-sm opacity-0 group-hover/stat:opacity-100 transition-opacity duration-300 -z-10"></div>
               <div className="relative bg-gradient-to-br from-slate-700/50 to-slate-800/50 rounded-xl p-3 border border-slate-600/30 backdrop-blur-sm">
                 <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">RAM</p>
                 <p className="text-white font-bold text-lg">
@@ -167,7 +167,7 @@ const VMCard = ({ vm, node, onActionComplete }) => {
         </div>
         
         {/* Decorative corner gradient */}
-        <div className={`absolute top-0 right-0 w-32 h-32 rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
+        <div className={`absolute top-0 right-0 w-32 h-32 rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none ${
           isLXC 
             ? 'bg-gradient-to-br from-purple-500/10 to-transparent' 
             : 'bg-gradient-to-br from-green-500/10 to-transparent'
