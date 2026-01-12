@@ -37,25 +37,15 @@ const VMCard = ({ vm, node, onActionComplete }) => {
   };
 
   return (
-    <div className="relative group overflow-hidden rounded-2xl">
-      {/* Glow effect - couleur selon le type - avec z-index correct */}
-      <div className={`absolute -inset-1 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500 -z-10 ${
-        isLXC 
-          ? 'bg-gradient-to-br from-purple-500/20 to-pink-500/20' 
-          : 'bg-gradient-to-br from-green-500/20 to-emerald-500/20'
-      }`}></div>
-      
+    <div className="relative group">
       {/* Card content */}
       <div className="relative bg-gradient-to-br from-slate-800/90 via-slate-800/80 to-slate-900/90 rounded-2xl p-6 shadow-2xl border border-slate-700/50 backdrop-blur-sm hover:border-slate-600/50 transition-all duration-300 hover:transform hover:-translate-y-1">
         
         {/* Header */}
         <div className="flex items-start justify-between mb-5">
           <div className="flex items-center gap-3">
-            {/* Icon avec glow */}
+            {/* Icon */}
             <div className="relative">
-              <div className={`absolute inset-0 rounded-xl blur-md transition-all duration-300 ${
-                isLXC ? 'bg-purple-500/30' : 'bg-green-500/30'
-              }`}></div>
               <div className={`relative p-2.5 rounded-xl border backdrop-blur-sm ${
                 isLXC 
                   ? 'bg-gradient-to-br from-purple-500/20 to-pink-500/20 border-purple-400/30' 
@@ -79,9 +69,6 @@ const VMCard = ({ vm, node, onActionComplete }) => {
           
           {/* Status badge */}
           <div className="relative">
-            <div className={`absolute inset-0 rounded-full blur-md ${
-              isRunning ? 'bg-green-500/50' : 'bg-slate-500/30'
-            }`}></div>
             <span className={`relative px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide border backdrop-blur-sm ${
               isRunning
                 ? 'bg-green-500/20 text-green-300 border-green-500/30 shadow-lg shadow-green-500/20'
@@ -96,8 +83,7 @@ const VMCard = ({ vm, node, onActionComplete }) => {
         {isRunning && (
           <div className="grid grid-cols-2 gap-3 mb-5">
             {/* CPU Stat */}
-            <div className="relative group/stat overflow-hidden rounded-xl">
-              <div className="absolute -inset-0.5 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-xl blur-sm opacity-0 group-hover/stat:opacity-100 transition-opacity duration-300 -z-10"></div>
+            <div className="relative">
               <div className="relative bg-gradient-to-br from-slate-700/50 to-slate-800/50 rounded-xl p-3 border border-slate-600/30 backdrop-blur-sm">
                 <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">CPU</p>
                 <p className="text-white font-bold text-lg">
@@ -107,8 +93,7 @@ const VMCard = ({ vm, node, onActionComplete }) => {
             </div>
             
             {/* RAM Stat */}
-            <div className="relative group/stat overflow-hidden rounded-xl">
-              <div className="absolute -inset-0.5 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-xl blur-sm opacity-0 group-hover/stat:opacity-100 transition-opacity duration-300 -z-10"></div>
+            <div className="relative">
               <div className="relative bg-gradient-to-br from-slate-700/50 to-slate-800/50 rounded-xl p-3 border border-slate-600/30 backdrop-blur-sm">
                 <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">RAM</p>
                 <p className="text-white font-bold text-lg">
