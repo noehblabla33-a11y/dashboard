@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Server } from 'lucide-react';
-import ServerStats from './components/ServerStats';
+import { Server, Cpu, HardDrive, Network } from 'lucide-react';
+import { LineChart, Line, ResponsiveContainer } from 'recharts';
 import VMCard from './components/VMCard';
 import { getNodes, getNodeStatus, getNodeResources } from './services/api';
 import './index.css';
@@ -12,6 +12,8 @@ function App() {
   const [resources, setResources] = useState({ vms: [], containers: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [cpuTrend, setCpuTrend] = useState([]);
+  const [memTrend, setMemTrend] = useState([]);
 
   // Charger les nodes au démarrage
   useEffect(() => {
@@ -58,6 +60,13 @@ function App() {
 
       if (statusResponse.success) {
         setNodeStatus(statusResponse.data);
+        
+        // Mise à jour des tendances
+        const cpuPercent = ((statusResponse.data.cpu || 0) * 100).toFixed(1);
+        const memPercent = ((statusResponse.data.memory?.used || 0) / (statusResponse.data.memory?.total || 1) * 100).toFixed(1);
+        
+        setCpuTrend(prev => [...prev.slice(-19), { value: parseFloat(cpuPercent), time: Date.now() }]);
+        setMemTrend(prev => [...prev.slice(-19), { value: parseFloat(memPercent), time: Date.now() }]);
       }
 
       if (resourcesResponse.success) {
@@ -116,7 +125,7 @@ function App() {
         <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-50"></div>
         
         <div className="container mx-auto px-6 py-6 relative z-10">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-6">
             {/* Left side - Logo and title */}
             <div className="flex items-center gap-4">
               <div className="relative group">
@@ -180,6 +189,102 @@ function App() {
               </div>
             )}
           </div>
+
+          {/* Compact Stats Row */}
+          {nodeStatus && (
+            <div className="grid grid-cols-3 gap-4">
+              {/* CPU Stat */}
+              <div className="relative group overflow-hidden">
+                <div className="absolute -inset-0.5 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+                <div className="relative bg-gradient-to-br from-slate-800/80 to-slate-900/80 rounded-xl p-4 border border-slate-700/50 backdrop-blur-sm overflow-hidden">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className="p-1.5 bg-blue-500/20 rounded-lg">
+                        <Cpu className="w-4 h-4 text-blue-400" />
+                      </div>
+                      <span className="text-slate-300 text-xs font-semibold uppercase tracking-wider">CPU</span>
+                    </div>
+                    <span className="text-2xl font-bold text-white">
+                      {((nodeStatus.cpu || 0) * 100).toFixed(1)}<span className="text-sm text-slate-400 ml-1">%</span>
+                    </span>
+                  </div>
+                  <div className="h-12 overflow-hidden">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={cpuTrend}>
+                        <defs>
+                          <linearGradient id="cpuGradient" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.5" />
+                            <stop offset="100%" stopColor="#60a5fa" stopOpacity="1" />
+                          </linearGradient>
+                        </defs>
+                        <Line type="monotone" dataKey="value" stroke="url(#cpuGradient)" strokeWidth={2} dot={false} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+
+              {/* RAM Stat */}
+              <div className="relative group overflow-hidden">
+                <div className="absolute -inset-0.5 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+                <div className="relative bg-gradient-to-br from-slate-800/80 to-slate-900/80 rounded-xl p-4 border border-slate-700/50 backdrop-blur-sm overflow-hidden">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className="p-1.5 bg-purple-500/20 rounded-lg">
+                        <HardDrive className="w-4 h-4 text-purple-400" />
+                      </div>
+                      <span className="text-slate-300 text-xs font-semibold uppercase tracking-wider">RAM</span>
+                    </div>
+                    <span className="text-2xl font-bold text-white">
+                      {((nodeStatus.memory?.used || 0) / (nodeStatus.memory?.total || 1) * 100).toFixed(1)}<span className="text-sm text-slate-400 ml-1">%</span>
+                    </span>
+                  </div>
+                  <div className="h-12 overflow-hidden">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={memTrend}>
+                        <defs>
+                          <linearGradient id="ramGradient" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stopColor="#a855f7" stopOpacity="0.5" />
+                            <stop offset="100%" stopColor="#ec4899" stopOpacity="1" />
+                          </linearGradient>
+                        </defs>
+                        <Line type="monotone" dataKey="value" stroke="url(#ramGradient)" strokeWidth={2} dot={false} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+
+              {/* Network Stat */}
+              <div className="relative group overflow-hidden">
+                <div className="absolute -inset-0.5 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+                <div className="relative bg-gradient-to-br from-slate-800/80 to-slate-900/80 rounded-xl p-4 border border-slate-700/50 backdrop-blur-sm overflow-hidden">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className="p-1.5 bg-emerald-500/20 rounded-lg">
+                        <Network className="w-4 h-4 text-emerald-400" />
+                      </div>
+                      <span className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Network</span>
+                    </div>
+                    <span className="text-2xl font-bold text-white">
+                      {((nodeStatus.memory?.used || 0) / (1024 ** 3)).toFixed(1)}<span className="text-sm text-slate-400 ml-1">GB</span>
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-slate-400 mt-3">
+                    <div>
+                      <span className="text-emerald-400 font-semibold">↑</span> 0 MB/s
+                    </div>
+                    <div>
+                      <span className="text-blue-400 font-semibold">↓</span> 0 MB/s
+                    </div>
+                    <div className="text-slate-500">
+                      {((nodeStatus.memory?.total || 0) / (1024 ** 3)).toFixed(1)} GB total
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         
         {/* Bottom glow */}
@@ -188,8 +293,6 @@ function App() {
 
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
-        {/* Server Stats */}
-        <ServerStats nodeStatus={nodeStatus} />
 
         {/* VMs & Containers Section */}
         <div className="mb-6 flex items-center gap-4">
