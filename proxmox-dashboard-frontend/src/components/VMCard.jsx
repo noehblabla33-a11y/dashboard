@@ -65,8 +65,19 @@ const VMCard = ({ vm, node, onActionComplete }) => {
     }
   };
 
+  // Définir les couleurs et effets selon le type et le statut
+  const borderColor = isRunning 
+    ? (isLXC ? 'border-purple-500/50' : 'border-green-500/50')
+    : 'border-slate-700';
+  
+  const glowEffect = isRunning
+    ? (isLXC 
+        ? 'shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40' 
+        : 'shadow-lg shadow-green-500/20 hover:shadow-green-500/40')
+    : 'shadow-lg';
+
   return (
-    <div className="bg-slate-800 rounded-lg p-6 shadow-lg border border-slate-700 hover:border-slate-600 transition-colors">
+    <div className={`bg-slate-800 rounded-lg p-6 border-2 ${borderColor} ${glowEffect} hover:border-opacity-100 transition-all duration-300`}>
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className={`p-2 rounded-lg ${isLXC ? 'bg-purple-500/20' : 'bg-green-500/20'}`}>
@@ -87,11 +98,11 @@ const VMCard = ({ vm, node, onActionComplete }) => {
           <span
             className={`px-3 py-1 rounded-full text-xs font-medium ${
               isRunning
-                ? 'bg-green-500/20 text-green-400'
+                ? 'bg-green-500/20 text-green-400 animate-pulse'
                 : 'bg-slate-600/50 text-slate-400'
             }`}
           >
-            {isRunning ? 'En ligne' : 'Arrêté'}
+            {isRunning ? '● En ligne' : '○ Arrêté'}
           </span>
         </div>
       </div>
@@ -99,15 +110,15 @@ const VMCard = ({ vm, node, onActionComplete }) => {
       {/* Stats */}
       {isRunning && (
         <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
-          <div className="bg-slate-700/50 rounded p-2">
-            <p className="text-slate-400">CPU</p>
-            <p className="text-white font-medium">
+          <div className="bg-slate-700/50 rounded p-3 border border-slate-600/50 hover:border-slate-500/50 transition-colors">
+            <p className="text-slate-400 text-xs mb-1">CPU</p>
+            <p className="text-white font-bold text-lg">
               {vm.cpu ? `${(vm.cpu * 100).toFixed(1)}%` : 'N/A'}
             </p>
           </div>
-          <div className="bg-slate-700/50 rounded p-2">
-            <p className="text-slate-400">RAM</p>
-            <p className="text-white font-medium">
+          <div className="bg-slate-700/50 rounded p-3 border border-slate-600/50 hover:border-slate-500/50 transition-colors">
+            <p className="text-slate-400 text-xs mb-1">RAM</p>
+            <p className="text-white font-bold text-lg">
               {vm.mem && vm.maxmem
                 ? `${((vm.mem / vm.maxmem) * 100).toFixed(0)}%`
                 : 'N/A'}
@@ -122,7 +133,7 @@ const VMCard = ({ vm, node, onActionComplete }) => {
           <button
             onClick={() => handleAction('start')}
             disabled={loading}
-            className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 disabled:bg-green-800 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 disabled:bg-green-800 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105 active:scale-95"
           >
             {loading && actionType === 'start' ? (
               <RotateCw className="w-4 h-4 animate-spin" />
@@ -136,7 +147,7 @@ const VMCard = ({ vm, node, onActionComplete }) => {
             <button
               onClick={() => handleAction('reboot')}
               disabled={loading}
-              className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg font-medium transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105 active:scale-95"
             >
               {loading && actionType === 'reboot' ? (
                 <RotateCw className="w-4 h-4 animate-spin" />
@@ -148,7 +159,7 @@ const VMCard = ({ vm, node, onActionComplete }) => {
             <button
               onClick={() => handleAction('stop')}
               disabled={loading}
-              className="flex-1 flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 disabled:bg-red-800 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg font-medium transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 disabled:bg-red-800 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105 active:scale-95"
             >
               {loading && actionType === 'stop' ? (
                 <RotateCw className="w-4 h-4 animate-spin" />
@@ -166,7 +177,7 @@ const VMCard = ({ vm, node, onActionComplete }) => {
         <button
           onClick={handleUpdateDashboard}
           disabled={updating}
-          className="w-full mt-3 py-2 px-4 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed rounded-lg transition-colors flex items-center justify-center gap-2 font-medium"
+          className="w-full mt-3 py-2 px-4 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 font-medium shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40"
         >
           <RefreshCw className={`w-4 h-4 ${updating ? 'animate-spin' : ''}`} />
           {updating ? 'Mise à jour en cours...' : '🚀 Mettre à jour le Dashboard'}

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Server, Cpu, HardDrive, Network } from 'lucide-react';
 import { LineChart, Line, ResponsiveContainer } from 'recharts';
 import VMCard from './components/VMCard';
+import Calendar from './components/Calendar';
 import { getNodes, getNodeStatus, getNodeResources } from './services/api';
 import './index.css';
 
@@ -293,6 +294,9 @@ function App() {
 
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
+        
+        {/* Composant Calendrier */}
+        <Calendar />
 
         {/* VMs & Containers Section */}
         <div className="mb-6 flex items-center gap-4">
