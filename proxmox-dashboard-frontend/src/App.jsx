@@ -3,6 +3,7 @@ import { Server, Cpu, HardDrive, Network } from 'lucide-react';
 import { LineChart, Line, ResponsiveContainer } from 'recharts';
 import VMCard from './components/VMCard';
 import Calendar from './components/Calendar';
+import LazyChart from './components/LazyChart';
 import { getNodes, getNodeStatus, getNodeResources } from './services/api';
 import './index.css';
 
@@ -165,11 +166,12 @@ function App() {
                         {((nodeStatus.cpu || 0) * 100).toFixed(1)}%
                       </span>
                     </div>
-                    <ResponsiveContainer width="100%" height={20}>
-                      <LineChart data={cpuTrend}>
-                        <Line type="monotone" dataKey="value" stroke="#3b82f6" strokeWidth={2} dot={false} />
-                      </LineChart>
-                    </ResponsiveContainer>
+                    <LazyChart 
+                      data={cpuTrend} 
+                      dataKey="value" 
+                      stroke="#3b82f6" 
+                      strokeWidth={2} 
+                    />
                   </div>
                 </div>
 
@@ -186,11 +188,12 @@ function App() {
                         {((nodeStatus.memory?.used || 0) / (nodeStatus.memory?.total || 1) * 100).toFixed(1)}%
                       </span>
                     </div>
-                    <ResponsiveContainer width="100%" height={20}>
-                      <LineChart data={memTrend}>
-                        <Line type="monotone" dataKey="value" stroke="#a855f7" strokeWidth={2} dot={false} />
-                      </LineChart>
-                    </ResponsiveContainer>
+                    <LazyChart 
+                      data={memTrend} 
+                      dataKey="value" 
+                      stroke="#a855f7" 
+                      strokeWidth={2} 
+                    />
                   </div>
                 </div>
 
