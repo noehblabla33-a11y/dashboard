@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Square, RotateCw, Server, Container, RefreshCw, Rocket } from 'lucide-react';
+import { Play, Square, RotateCw, Server, Container, Rocket } from 'lucide-react';
 import api from '../services/api';
 
 const VMCard = ({ vm, node, onActionComplete }) => {
   const [loading, setLoading] = useState(false);
   const [actionType, setActionType] = useState(null);
-  const [updating, setUpdating] = useState(false);
   const [deploying, setDeploying] = useState(false);
   const [deployableServices, setDeployableServices] = useState({});
 
@@ -44,22 +43,6 @@ const VMCard = ({ vm, node, onActionComplete }) => {
       setLoading(false);
       setActionType(null);
       alert(`Erreur lors de l'action ${action}`);
-    }
-  };
-
-  const handleUpdateDashboard = async () => {
-    try {
-      setUpdating(true);
-      const response = await api.updateDashboard(node, vm.vmid);
-      
-      if (response.success) {
-        alert('✅ Dashboard mis à jour avec succès!');
-      }
-    } catch (error) {
-      console.error('Erreur mise à jour dashboard:', error);
-      alert('❌ Erreur lors de la mise à jour du dashboard');
-    } finally {
-      setUpdating(false);
     }
   };
 
@@ -200,18 +183,6 @@ const VMCard = ({ vm, node, onActionComplete }) => {
           </>
         )}
       </div>
-
-      {/* Bouton de mise à jour du dashboard (uniquement pour le container 101) */}
-      {vm.vmid === 101 && (
-        <button
-          onClick={handleUpdateDashboard}
-          disabled={updating}
-          className="w-full mt-2 py-1.5 px-3 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center gap-1.5 text-sm font-medium shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 ${updating ? 'animate-spin' : ''}`} />
-          {updating ? 'Mise à jour...' : '🚀 MàJ Dashboard'}
-        </button>
-      )}
 
       {/* Bouton de déploiement Ansible (pour les containers configurés) */}
       {isDeployable && (
