@@ -7,7 +7,7 @@ const execAsync = promisify(exec);
 
 // Configuration du LXC Ansible
 const ANSIBLE_LXC = {
-  host: '10.0.0.61',  // IP de votre LXC Ansible
+  host: '192.168.1.61',  // IP de votre LXC Ansible
   user: 'ansible',        // Utilisateur SSH
   // Utiliser une clé SSH sans mot de passe pour l'authentification
   sshKey: '/root/.ssh/id_rsa',
