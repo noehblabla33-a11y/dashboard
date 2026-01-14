@@ -18,8 +18,8 @@ const ANSIBLE_LXC = {
 
 // Liste des services déployables via Ansible (mapping VMID → nom service dans inventory)
 const DEPLOYABLE_SERVICES = {
-  '101': 'proxmox-backend',  // Exemple: LXC 101 = service "proxmox-dashboard"
-  '110': 'frigo',         // Exemple: LXC 102 = service "web-server"
+  '101': 'dashboard',
+  '110': 'frigo',
   // Ajoutez ici les autres services
 };
 
@@ -36,12 +36,12 @@ router.post('/containers/:id/update-dashboard', async (req, res) => {
   }
 
   try {
-    console.log('🔄 Lancement de la mise à jour du dashboard...');
+    console.log('Lancement de la mise à jour du dashboard...');
     
     // Exécuter le script de mise à jour
     const { stdout, stderr } = await execAsync('/root/scripts/update-dashboard.sh');
     
-    console.log('✅ Script exécuté avec succès');
+    console.log('Script exécuté avec succès');
     
     res.json({ 
       success: true, 
@@ -51,7 +51,7 @@ router.post('/containers/:id/update-dashboard', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('❌ Erreur lors de la mise à jour:', error);
+    console.error('Erreur lors de la mise à jour:', error);
     
     res.status(500).json({ 
       success: false, 
@@ -77,8 +77,8 @@ router.post('/containers/:id/ansible-deploy', async (req, res) => {
   }
 
   try {
-    console.log(`🚀 Déploiement Ansible du service "${serviceName}" (LXC ${id})...`);
-    console.log(`📡 Connexion au LXC Ansible: ${ANSIBLE_LXC.user}@${ANSIBLE_LXC.host}`);
+    console.log(`Déploiement Ansible du service "${serviceName}" (LXC ${id})...`);
+    console.log(`Connexion au LXC Ansible: ${ANSIBLE_LXC.user}@${ANSIBLE_LXC.host}`);
     
     // Construire la commande SSH qui exécute Ansible sur le LXC
     const ansibleCommand = `cd ${ANSIBLE_LXC.ansibleDir} && ansible-playbook -i ${ANSIBLE_LXC.inventoryFile} ${ANSIBLE_LXC.playbookFile} --limit ${serviceName}`;
