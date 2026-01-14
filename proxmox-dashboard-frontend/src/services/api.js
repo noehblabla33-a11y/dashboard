@@ -42,5 +42,50 @@ export const rebootVM = async (vmid, node, type) => {
   return response.data;
 };
 
+// Fonction helper pour les actions VM/LXC
+export const controlVM = async (node, vmid, action, isLXC) => {
+  const type = isLXC ? 'lxc' : 'qemu';
+  
+  switch(action) {
+    case 'start':
+      return await startVM(vmid, node, type);
+    case 'stop':
+      return await stopVM(vmid, node, type);
+    case 'reboot':
+      return await rebootVM(vmid, node, type);
+    default:
+      throw new Error(`Action inconnue: ${action}`);
+  }
+};
+
+// Mise à jour du dashboard (ancienne méthode)
+export const updateDashboard = async (node, vmid) => {
+  const response = await api.post(`/containers/${vmid}/update-dashboard`);
+  return response.data;
+};
+
+// Nouvelle fonction: Déploiement Ansible
+export const ansibleDeploy = async (vmid) => {
+  const response = await api.post(`/containers/${vmid}/ansible-deploy`);
+  return response.data;
+};
+
+// Récupérer la liste des services déployables
+export const getDeployableServices = async () => {
+  const response = await api.get('/ansible/services');
+  return response.data;
+};
+
 // Export par défaut
-export default api;
+export default {
+  getNodes,
+  getNodeStatus,
+  getNodeResources,
+  startVM,
+  stopVM,
+  rebootVM,
+  controlVM,
+  updateDashboard,
+  ansibleDeploy,
+  getDeployableServices
+};

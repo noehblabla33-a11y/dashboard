@@ -1,14 +1,31 @@
-import React, { useState } from 'react';
-import { Play, Square, RotateCw, Server, Container, RefreshCw } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Play, Square, RotateCw, Server, Container, RefreshCw, Rocket } from 'lucide-react';
 import api from '../services/api';
 
 const VMCard = ({ vm, node, onActionComplete }) => {
   const [loading, setLoading] = useState(false);
   const [actionType, setActionType] = useState(null);
   const [updating, setUpdating] = useState(false);
+  const [deploying, setDeploying] = useState(false);
+  const [deployableServices, setDeployableServices] = useState({});
 
   const isRunning = vm.status === 'running';
   const isLXC = vm.type === 'lxc';
+
+  // Charger la liste des services déployables au montage
+  useEffect(() => {
+    const loadDeployableServices = async () => {
+      try {
+        const response = await api.getDeployableServices();
+        if (response.success) {
+          setDeployableServices(response.data);
+        }
+      } catch (error) {
+        console.error('Erreur chargement services déployables:', error);
+      }
+    };
+    loadDeployableServices();
+  }, []);
 
   const handleAction = async (action) => {
     try {
@@ -46,6 +63,34 @@ const VMCard = ({ vm, node, onActionComplete }) => {
     }
   };
 
+  const handleAnsibleDeploy = async () => {
+    const serviceName = deployableServices[vm.vmid];
+    
+    if (!confirm(`Voulez-vous vraiment déployer/mettre à jour le service "${serviceName}" ?`)) {
+      return;
+    }
+
+    try {
+      setDeploying(true);
+      const response = await api.ansibleDeploy(vm.vmid);
+      
+      if (response.success) {
+        alert(`✅ Service "${response.serviceName}" déployé avec succès!\n\nDétails:\n${response.output}`);
+        // Rafraîchir les données après le déploiement
+        setTimeout(() => {
+          onActionComplete();
+        }, 2000);
+      }
+    } catch (error) {
+      console.error('Erreur déploiement Ansible:', error);
+      const errorMsg = error.response?.data?.error || error.message;
+      const errorOutput = error.response?.data?.stderr || '';
+      alert(`❌ Erreur lors du déploiement:\n${errorMsg}\n\n${errorOutput}`);
+    } finally {
+      setDeploying(false);
+    }
+  };
+
   const borderColor = isRunning
     ? (isLXC ? 'border-purple-500/50' : 'border-green-500/50')
     : 'border-slate-700';
@@ -55,6 +100,9 @@ const VMCard = ({ vm, node, onActionComplete }) => {
         ? 'shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40' 
         : 'shadow-lg shadow-green-500/20 hover:shadow-green-500/40')
     : 'shadow-lg';
+
+  // Vérifier si ce container est déployable via Ansible
+  const isDeployable = vm.vmid in deployableServices;
 
   return (
     <div className={`bg-slate-800 rounded-lg p-3 border-2 ${borderColor} ${glowEffect} hover:border-opacity-100 transition-all duration-300`}>
@@ -71,6 +119,7 @@ const VMCard = ({ vm, node, onActionComplete }) => {
             <h3 className="text-white font-semibold text-sm">{vm.name || `VM ${vm.vmid}`}</h3>
             <p className="text-slate-400 text-xs">
               {isLXC ? 'LXC' : 'VM'} #{vm.vmid}
+              {isDeployable && <span className="ml-2 text-orange-400">🚀</span>}
             </p>
           </div>
         </div>
@@ -161,6 +210,18 @@ const VMCard = ({ vm, node, onActionComplete }) => {
         >
           <RefreshCw className={`w-3.5 h-3.5 ${updating ? 'animate-spin' : ''}`} />
           {updating ? 'Mise à jour...' : '🚀 MàJ Dashboard'}
+        </button>
+      )}
+
+      {/* Bouton de déploiement Ansible (pour les containers configurés) */}
+      {isDeployable && (
+        <button
+          onClick={handleAnsibleDeploy}
+          disabled={deploying}
+          className="w-full mt-2 py-1.5 px-3 bg-orange-500 hover:bg-orange-600 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center gap-1.5 text-sm font-medium shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40"
+        >
+          <Rocket className={`w-3.5 h-3.5 ${deploying ? 'animate-spin' : ''}`} />
+          {deploying ? 'Déploiement...' : `🚀 Déployer ${deployableServices[vm.vmid]}`}
         </button>
       )}
     </div>
