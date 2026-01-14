@@ -117,7 +117,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
-      {/* Header */}
+      {/* Header - code inchangé */}
       <header className="relative bg-gradient-to-br from-slate-800 via-slate-800/95 to-slate-900 border-b border-slate-700/50 shadow-2xl backdrop-blur-xl">
         {/* Animated background gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-green-500/5 animate-gradient-shift"></div>
@@ -149,7 +149,7 @@ function App() {
               </div>
             </div>
 
-            {/* Stats Row - flex-grow pour prendre l'espace disponible */}
+            {/* Stats Row */}
             {nodeStatus && (
               <div className="flex items-center gap-3 flex-grow">
                 {/* CPU Stat */}
@@ -158,28 +158,18 @@ function App() {
                   <div className="relative bg-gradient-to-br from-slate-800/80 to-slate-900/80 rounded-xl p-3 border border-slate-700/50 backdrop-blur-sm overflow-hidden">
                     <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-2">
-                        <div className="p-1 bg-blue-500/20 rounded-lg">
-                          <Cpu className="w-3.5 h-3.5 text-blue-400" />
-                        </div>
-                        <span className="text-slate-300 text-xs font-semibold uppercase tracking-wider">CPU</span>
+                        <Cpu className="w-4 h-4 text-blue-400" />
+                        <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">CPU</span>
                       </div>
-                      <span className="text-xl font-bold text-white">
-                        {((nodeStatus.cpu || 0) * 100).toFixed(1)}<span className="text-xs text-slate-400 ml-1">%</span>
+                      <span className="text-lg font-bold text-white">
+                        {((nodeStatus.cpu || 0) * 100).toFixed(1)}%
                       </span>
                     </div>
-                    <div className="h-10 overflow-hidden">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={cpuTrend}>
-                          <defs>
-                            <linearGradient id="cpuGradient" x1="0" y1="0" x2="1" y2="0">
-                              <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.5" />
-                              <stop offset="100%" stopColor="#60a5fa" stopOpacity="1" />
-                            </linearGradient>
-                          </defs>
-                          <Line type="monotone" dataKey="value" stroke="url(#cpuGradient)" strokeWidth={2} dot={false} />
-                        </LineChart>
-                      </ResponsiveContainer>
-                    </div>
+                    <ResponsiveContainer width="100%" height={20}>
+                      <LineChart data={cpuTrend}>
+                        <Line type="monotone" dataKey="value" stroke="#3b82f6" strokeWidth={2} dot={false} />
+                      </LineChart>
+                    </ResponsiveContainer>
                   </div>
                 </div>
 
@@ -189,106 +179,82 @@ function App() {
                   <div className="relative bg-gradient-to-br from-slate-800/80 to-slate-900/80 rounded-xl p-3 border border-slate-700/50 backdrop-blur-sm overflow-hidden">
                     <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-2">
-                        <div className="p-1 bg-purple-500/20 rounded-lg">
-                          <HardDrive className="w-3.5 h-3.5 text-purple-400" />
-                        </div>
-                        <span className="text-slate-300 text-xs font-semibold uppercase tracking-wider">RAM</span>
+                        <HardDrive className="w-4 h-4 text-purple-400" />
+                        <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">RAM</span>
                       </div>
-                      <span className="text-xl font-bold text-white">
-                        {((nodeStatus.memory?.used || 0) / (nodeStatus.memory?.total || 1) * 100).toFixed(1)}<span className="text-xs text-slate-400 ml-1">%</span>
+                      <span className="text-lg font-bold text-white">
+                        {((nodeStatus.memory?.used || 0) / (nodeStatus.memory?.total || 1) * 100).toFixed(1)}%
                       </span>
                     </div>
-                    <div className="h-10 overflow-hidden">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={memTrend}>
-                          <defs>
-                            <linearGradient id="ramGradient" x1="0" y1="0" x2="1" y2="0">
-                              <stop offset="0%" stopColor="#a855f7" stopOpacity="0.5" />
-                              <stop offset="100%" stopColor="#ec4899" stopOpacity="1" />
-                            </linearGradient>
-                          </defs>
-                          <Line type="monotone" dataKey="value" stroke="url(#ramGradient)" strokeWidth={2} dot={false} />
-                        </LineChart>
-                      </ResponsiveContainer>
-                    </div>
+                    <ResponsiveContainer width="100%" height={20}>
+                      <LineChart data={memTrend}>
+                        <Line type="monotone" dataKey="value" stroke="#a855f7" strokeWidth={2} dot={false} />
+                      </LineChart>
+                    </ResponsiveContainer>
                   </div>
                 </div>
 
                 {/* Network Stat */}
                 <div className="relative group overflow-hidden flex-1">
                   <div className="absolute -inset-0.5 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-                  <div className="relative bg-gradient-to-br from-slate-800/80 to-slate-900/80 rounded-xl p-3 border border-slate-700/50 backdrop-blur-sm overflow-hidden">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <div className="flex items-center gap-2">
-                        <div className="p-1 bg-emerald-500/20 rounded-lg">
-                          <Network className="w-3.5 h-3.5 text-emerald-400" />
-                        </div>
-                        <span className="text-slate-300 text-xs font-semibold uppercase tracking-wider">Network</span>
-                      </div>
-                      <span className="text-xl font-bold text-white">
-                        {((nodeStatus.memory?.used || 0) / (1024 ** 3)).toFixed(1)}<span className="text-xs text-slate-400 ml-1">GB</span>
-                      </span>
+                  <div className="relative bg-gradient-to-br from-slate-800/80 to-slate-900/80 rounded-xl p-3 border border-slate-700/50 backdrop-blur-sm">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Network className="w-4 h-4 text-emerald-400" />
+                      <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Network</span>
                     </div>
-                    <div className="flex items-center justify-between text-[10px] text-slate-400 mt-2">
-                      <div>
-                        <span className="text-emerald-400 font-semibold">↑</span> 0 MB/s
+                    <div className="text-[11px] text-slate-500 space-y-0.5">
+                      <div className="flex justify-between">
+                        <span>↓</span>
+                        <span className="text-emerald-300 font-semibold">
+                          {((nodeStatus.netin || 0) / 1024 / 1024).toFixed(2)} MB/s
+                        </span>
                       </div>
-                      <div>
-                        <span className="text-blue-400 font-semibold">↓</span> 0 MB/s
-                      </div>
-                      <div className="text-slate-500">
-                        {((nodeStatus.memory?.total || 0) / (1024 ** 3)).toFixed(1)} GB
+                      <div className="flex justify-between">
+                        <span>↑</span>
+                        <span className="text-teal-300 font-semibold">
+                          {((nodeStatus.netout || 0) / 1024 / 1024).toFixed(2)} MB/s
+                        </span>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             )}
-            
-            {/* Right side - Uptime Badge */}
+
+            {/* Uptime Badge */}
             {nodeStatus && (
-              <div className="relative group flex-shrink-0">
-                {/* Glow effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-green-500/30 to-emerald-500/30 rounded-xl blur-xl group-hover:blur-2xl transition-all duration-300"></div>
-                
-                {/* Badge content - version compacte */}
-                <div className="relative flex items-center gap-3 bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-green-600/10 border border-green-500/30 rounded-xl px-4 py-3 backdrop-blur-md uptime-badge">
-                  {/* Status indicator */}
-                  <div className="flex items-center gap-2">
-                    <div className="relative">
-                      <div className="absolute inset-0 bg-green-400 rounded-full animate-ping opacity-75"></div>
-                      <div className="absolute inset-0 bg-green-400 rounded-full animate-pulse"></div>
-                      <div className="relative w-2 h-2 bg-green-500 rounded-full shadow-lg shadow-green-500/50"></div>
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-green-300/70 text-[10px] font-semibold uppercase tracking-wider">System</span>
+              <div className="flex-shrink-0">
+                <div className="relative group uptime-badge overflow-hidden">
+                  <div className="absolute -inset-1 bg-gradient-to-br from-green-500/40 to-emerald-500/40 rounded-xl blur-md"></div>
+                  <div className="relative bg-gradient-to-br from-green-500/20 to-emerald-500/30 rounded-xl p-3 border border-green-400/50 backdrop-blur-sm flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      <div className="relative">
+                        <div className="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse"></div>
+                        <div className="absolute inset-0 w-2.5 h-2.5 bg-green-400 rounded-full animate-ping"></div>
+                      </div>
                       <span className="text-green-200 text-xs font-bold">Online</span>
                     </div>
-                  </div>
-                  
-                  {/* Separator with gradient */}
-                  <div className="h-10 w-px bg-gradient-to-b from-transparent via-green-500/50 to-transparent"></div>
-                  
-                  {/* Uptime display */}
-                  <div className="flex flex-col items-end">
-                    <span className="text-green-300/70 text-[10px] font-semibold uppercase tracking-wider">Uptime</span>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-3xl font-bold bg-gradient-to-br from-green-300 to-emerald-400 bg-clip-text text-transparent">
-                        {Math.floor((nodeStatus.uptime || 0) / 86400)}
-                      </span>
-                      <span className="text-xs text-green-400/80 font-medium">jours</span>
+                    
+                    <div className="h-10 w-px bg-gradient-to-b from-transparent via-green-500/50 to-transparent"></div>
+                    
+                    <div className="flex flex-col items-end">
+                      <span className="text-green-300/70 text-[10px] font-semibold uppercase tracking-wider">Uptime</span>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-3xl font-bold bg-gradient-to-br from-green-300 to-emerald-400 bg-clip-text text-transparent">
+                          {Math.floor((nodeStatus.uptime || 0) / 86400)}
+                        </span>
+                        <span className="text-xs text-green-400/80 font-medium">jours</span>
+                      </div>
                     </div>
+                    
+                    <div className="absolute inset-0 rounded-xl border-2 border-green-400/0 group-hover:border-green-400/30 transition-all duration-300"></div>
                   </div>
-                  
-                  {/* Animated border */}
-                  <div className="absolute inset-0 rounded-xl border-2 border-green-400/0 group-hover:border-green-400/30 transition-all duration-300"></div>
                 </div>
               </div>
             )}
           </div>
         </div>
         
-        {/* Bottom glow */}
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-600 to-transparent"></div>
       </header>
 
@@ -337,20 +303,6 @@ function App() {
           </div>
         )}
       </main>
-
-      {/* Footer */}
-      <footer className="relative bg-gradient-to-br from-slate-800/80 via-slate-800/70 to-slate-900/80 border-t border-slate-700/50 mt-12 backdrop-blur-sm">
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-600 to-transparent"></div>
-        <div className="container mx-auto px-6 py-6 text-center">
-          <p className="text-slate-400 text-sm font-medium">
-            Proxmox Dashboard - <span className="text-slate-500">Projet personnel</span>
-          </p>
-          <div className="mt-2 flex items-center justify-center gap-2">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <p className="text-slate-500 text-xs">System monitoring active</p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
