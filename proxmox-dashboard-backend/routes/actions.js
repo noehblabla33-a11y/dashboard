@@ -9,8 +9,8 @@ const execAsync = promisify(exec);
 const ANSIBLE_LXC = {
   host: '192.168.1.61',
   user: 'ansible',
-  sshKey: '/home/dashboard/.ssh/id_rsa',  // ← Clé de l'utilisateur dashboard
-  ansibleDir: '/home/ansible/ansible',
+  sshKey: '/home/dashboard/.ssh/id_rsa',
+  ansibleDir: '/home/ansible/ansible-playbooks',
   inventoryFile: 'inventory.ini',
   playbookFile: 'deploy.yml'
 };
