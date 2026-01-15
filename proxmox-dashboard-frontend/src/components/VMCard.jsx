@@ -49,28 +49,78 @@ const VMCard = ({ vm, node, onActionComplete }) => {
   const handleAnsibleDeploy = async () => {
     const serviceName = deployableServices[vm.vmid];
     
-    if (!confirm(`Voulez-vous vraiment déployer/mettre à jour le service "${serviceName}" ?`)) {
-      return;
+    // Si c'est le dashboard lui-même (container 101), avertir du redémarrage
+    if (vm.vmid === 101) {
+      if (!confirm(
+        `⚠️ DÉPLOIEMENT DU DASHBOARD ⚠️\n\n` +
+        `Vous allez déployer et redémarrer le dashboard lui-même.\n\n` +
+        `➡️ Le service va redémarrer\n` +
+        `➡️ Vous verrez une erreur réseau temporaire (c'est normal)\n` +
+        `➡️ La page se rechargera automatiquement après 40 secondes\n\n` +
+        `Continuer ?`
+      )) {
+        return;
+      }
+    } else {
+      if (!confirm(`Voulez-vous vraiment déployer/mettre à jour le service "${serviceName}" ?`)) {
+        return;
+      }
     }
 
     try {
       setDeploying(true);
-      const response = await api.ansibleDeploy(vm.vmid);
       
-      if (response.success) {
-        alert(`✅ Service "${response.serviceName}" déployé avec succès!\n\nDétails:\n${response.output}`);
-        // Rafraîchir les données après le déploiement
-        setTimeout(() => {
-          onActionComplete();
-        }, 2000);
+      // Cas spécial : déploiement du dashboard lui-même
+      if (vm.vmid === 101) {
+        // Lancer le déploiement (on sait qu'il va échouer avec une erreur réseau)
+        api.ansibleDeploy(vm.vmid).catch(() => {
+          // Ignorer l'erreur réseau, c'est normal car le service redémarre
+          console.log('Erreur réseau attendue : le service redémarre');
+        });
+        
+        // Afficher un compteur de rechargement
+        let countdown = 40;
+        const countdownInterval = setInterval(() => {
+          countdown--;
+          if (countdown <= 0) {
+            clearInterval(countdownInterval);
+            window.location.reload();
+          }
+        }, 1000);
+        
+        alert(
+          `🚀 Déploiement lancé !\n\n` +
+          `Le dashboard va redémarrer...\n` +
+          `Rechargement automatique dans 40 secondes.\n\n` +
+          `Si la page ne se recharge pas, appuyez sur F5.`
+        );
+        
+      } else {
+        // Autres services : comportement normal
+        const response = await api.ansibleDeploy(vm.vmid);
+        
+        if (response.success) {
+          alert(`✅ Service "${response.serviceName}" déployé avec succès!\n\nDétails:\n${response.output.substring(0, 500)}`);
+          // Rafraîchir les données après le déploiement
+          setTimeout(() => {
+            onActionComplete();
+          }, 2000);
+        }
       }
     } catch (error) {
-      console.error('Erreur déploiement Ansible:', error);
-      const errorMsg = error.response?.data?.error || error.message;
-      const errorOutput = error.response?.data?.stderr || '';
-      alert(`❌ Erreur lors du déploiement:\n${errorMsg}\n\n${errorOutput}`);
+      // Seulement afficher l'erreur pour les services autres que 101
+      if (vm.vmid !== 101) {
+        console.error('Erreur déploiement Ansible:', error);
+        const errorMsg = error.response?.data?.error || error.message;
+        const errorOutput = error.response?.data?.stderr || '';
+        alert(`❌ Erreur lors du déploiement:\n${errorMsg}\n\n${errorOutput}`);
+      }
     } finally {
-      setDeploying(false);
+      // Ne pas remettre deploying à false pour le container 101
+      // car on va recharger la page de toute façon
+      if (vm.vmid !== 101) {
+        setDeploying(false);
+      }
     }
   };
 
