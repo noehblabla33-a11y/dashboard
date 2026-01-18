@@ -247,7 +247,6 @@ const VMCard = ({ vm, node, onActionComplete }) => {
         </button>
       )}
 
-      {/* Docker Controls - S'affiche automatiquement si Docker est disponible sur le LXC */}
       {isLXC && isRunning && (
         <DockerControls vmid={vm.vmid} />
       )}

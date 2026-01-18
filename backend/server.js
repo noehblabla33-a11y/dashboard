@@ -31,7 +31,7 @@ app.use((req, res, next) => {
 // ⚠️ IMPORTANT : Routes API AVANT le static
 app.use('/api', proxmoxRoutes);
 app.use('/api', actionsRoutes);
-app.use('/api', dockerRoutes);
+app.use('/api/docker', dockerRoutes);
 
 // Servir le frontend statique depuis dist
 const frontendPath = path.join(__dirname, '../frontend/dist');
