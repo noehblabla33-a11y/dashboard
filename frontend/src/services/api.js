@@ -105,7 +105,6 @@ export default {
   stopVM,
   rebootVM,
   controlVM,
-  updateDashboard,
   ansibleDeploy,
   getDeployableServices,
   getDockerContainers,
