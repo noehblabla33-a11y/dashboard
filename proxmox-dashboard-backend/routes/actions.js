@@ -18,6 +18,7 @@ const ANSIBLE_LXC = {
 // Liste des services déployables via Ansible (mapping VMID → nom service dans inventory)
 const DEPLOYABLE_SERVICES = {
   '101': 'dashboard',
+  '110': 'frigo'
 };
 
 // Route pour mettre à jour le dashboard (ancienne route conservée)

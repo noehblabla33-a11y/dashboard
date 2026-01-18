@@ -242,7 +242,7 @@ const VMCard = ({ vm, node, onActionComplete }) => {
           className="w-full mt-2 py-1.5 px-3 bg-orange-500 hover:bg-orange-600 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center gap-1.5 text-sm font-medium shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40"
         >
           <Rocket className={`w-3.5 h-3.5 ${deploying ? 'animate-spin' : ''}`} />
-          {deploying ? 'Déploiement...' : `🚀 Déployer ${deployableServices[vm.vmid]}`}
+          {deploying ? 'Déploiement...' : `Déployer ${deployableServices[vm.vmid]}`}
         </button>
       )}
     </div>
