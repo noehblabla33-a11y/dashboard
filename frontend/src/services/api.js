@@ -107,5 +107,10 @@ export default {
   controlVM,
   updateDashboard,
   ansibleDeploy,
-  getDeployableServices
+  getDeployableServices,
+  getDockerContainers,
+  pullDockerImage,
+  startDockerContainer,
+  stopDockerContainer,
+  restartDockerContainer
 };
