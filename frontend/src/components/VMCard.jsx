@@ -250,7 +250,7 @@ const VMCard = ({ vm, node, onActionComplete }) => {
         </button>
       )}
 
-      {vm.type === 'lxc' && vm.hasDocker && (
+      {vm.type === 'lxc' && isRunning && (
         <DockerControls vmid={vm.vmid} />
       )}
     </div>
