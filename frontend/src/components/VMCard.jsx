@@ -12,9 +12,6 @@ const VMCard = ({ vm, node, onActionComplete }) => {
   const isRunning = vm.status === 'running';
   const isLXC = vm.type === 'lxc';
 
-  const dockerEnabledLXC = [104, 105, 106];
-  const hasDocker = isLXC && dockerEnabledLXC.includes(vm.vmid);
-
   // Charger la liste des services déployables au montage
   useEffect(() => {
     const loadDeployableServices = async () => {
@@ -250,7 +247,8 @@ const VMCard = ({ vm, node, onActionComplete }) => {
         </button>
       )}
 
-      {vm.type === 'lxc' && isRunning && (
+      {/* Docker Controls - S'affiche automatiquement si Docker est disponible sur le LXC */}
+      {isLXC && isRunning && (
         <DockerControls vmid={vm.vmid} />
       )}
     </div>
