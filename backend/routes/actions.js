@@ -34,12 +34,12 @@ router.post('/containers/:id/update-dashboard', async (req, res) => {
   }
 
   try {
-    console.log('🔄 Lancement de la mise à jour du dashboard...');
+    console.log('Lancement de la mise à jour du dashboard...');
     
     // Exécuter le script de mise à jour
     const { stdout, stderr } = await execAsync('/root/scripts/update-dashboard.sh');
     
-    console.log('✅ Script exécuté avec succès');
+    console.log('Script exécuté avec succès');
     
     res.json({ 
       success: true, 
@@ -49,7 +49,7 @@ router.post('/containers/:id/update-dashboard', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('❌ Erreur lors de la mise à jour:', error);
+    console.error('Erreur lors de la mise à jour:', error);
     
     res.status(500).json({ 
       success: false, 
@@ -62,11 +62,6 @@ router.post('/containers/:id/update-dashboard', async (req, res) => {
 
 // Nouvelle route pour déployer/mettre à jour via Ansible (SSH vers LXC Ansible)
 router.post('/containers/:id/ansible-deploy', async (req, res) => {
-  console.log('═══════════════════════════════════════════════════════');
-  console.log('🚀 [DEBUG] Route /ansible-deploy appelée');
-  console.log('🔍 [DEBUG] Container ID:', req.params.id);
-  console.log('═══════════════════════════════════════════════════════');
-  
   const { id } = req.params;
   
   // Vérifier que le container est dans la liste des services déployables
@@ -164,7 +159,7 @@ router.post('/containers/:id/ansible-deploy', async (req, res) => {
 
 // Route pour obtenir la liste des services déployables
 router.get('/ansible/services', async (req, res) => {
-  console.log('🔍 [DEBUG] Route /ansible/services appelée');
+  console.log('[DEBUG] Route /ansible/services appelée');
   res.json({
     success: true,
     data: DEPLOYABLE_SERVICES
@@ -178,7 +173,7 @@ router.get('/ansible/test-connection', async (req, res) => {
   try {
     const testCommand = `ssh -i ${ANSIBLE_LXC.sshKey} -o StrictHostKeyChecking=no -o ConnectTimeout=5 ${ANSIBLE_LXC.user}@${ANSIBLE_LXC.host} "echo 'Connection OK' && ansible --version"`;
     
-    console.log('🔍 [DEBUG] Commande test:', testCommand);
+    console.log('[DEBUG] Commande test:', testCommand);
     
     const { stdout, stderr } = await execAsync(testCommand, {
       timeout: 10000
@@ -194,7 +189,7 @@ router.get('/ansible/test-connection', async (req, res) => {
       user: ANSIBLE_LXC.user
     });
   } catch (error) {
-    console.error('❌ [DEBUG] Test connexion échoué:', error.message);
+    console.error('[DEBUG] Test connexion échoué:', error.message);
     
     res.status(500).json({
       success: false,

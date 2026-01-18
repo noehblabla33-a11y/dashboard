@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Play, Square, RotateCw, Server, Container, Rocket } from 'lucide-react';
 import api from '../services/api';
+import DockerControls from './DockerControls';
 
 const VMCard = ({ vm, node, onActionComplete }) => {
   const [loading, setLoading] = useState(false);
@@ -10,6 +11,9 @@ const VMCard = ({ vm, node, onActionComplete }) => {
 
   const isRunning = vm.status === 'running';
   const isLXC = vm.type === 'lxc';
+
+  const dockerEnabledLXC = [104, 105, 106];
+  const hasDocker = isLXC && dockerEnabledLXC.includes(vm.vmid);
 
   // Charger la liste des services déployables au montage
   useEffect(() => {
@@ -244,6 +248,10 @@ const VMCard = ({ vm, node, onActionComplete }) => {
           <Rocket className={`w-3.5 h-3.5 ${deploying ? 'animate-spin' : ''}`} />
           {deploying ? 'Déploiement...' : `Déployer ${deployableServices[vm.vmid]}`}
         </button>
+      )}
+
+      {vm.type === 'lxc' && vm.hasDocker && (
+        <DockerControls vmid={vm.vmid} />
       )}
     </div>
   );

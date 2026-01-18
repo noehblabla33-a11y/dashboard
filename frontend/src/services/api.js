@@ -58,9 +58,29 @@ export const controlVM = async (node, vmid, action, isLXC) => {
   }
 };
 
-// Mise à jour du dashboard (ancienne méthode)
-export const updateDashboard = async (node, vmid) => {
-  const response = await api.post(`/containers/${vmid}/update-dashboard`);
+// Fonctions Docker
+export const getDockerContainers = async (vmid) => {
+  const response = await axios.get(`${API_BASE_URL}/docker/${vmid}/containers`);
+  return response.data;
+};
+
+export const pullDockerImage = async (vmid, imageName) => {
+  const response = await axios.post(`${API_BASE_URL}/docker/${vmid}/pull`, { imageName });
+  return response.data;
+};
+
+export const startDockerContainer = async (vmid, containerId) => {
+  const response = await axios.post(`${API_BASE_URL}/docker/${vmid}/containers/${containerId}/start`);
+  return response.data;
+};
+
+export const stopDockerContainer = async (vmid, containerId) => {
+  const response = await axios.post(`${API_BASE_URL}/docker/${vmid}/containers/${containerId}/stop`);
+  return response.data;
+};
+
+export const restartDockerContainer = async (vmid, containerId) => {
+  const response = await axios.post(`${API_BASE_URL}/docker/${vmid}/containers/${containerId}/restart`);
   return response.data;
 };
 
