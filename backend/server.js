@@ -34,7 +34,7 @@ app.use('/api', actionsRoutes);
 app.use('/api', dockerRoutes);
 
 // Servir le frontend statique depuis dist
-const frontendPath = path.join(__dirname, '../proxmox-dashboard-frontend/dist');
+const frontendPath = path.join(__dirname, '../frontend/dist');
 app.use(express.static(frontendPath));
 
 // Fallback pour React Router - DOIT être après les routes API
